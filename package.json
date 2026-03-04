@@ -4,7 +4,8 @@
   "description": "This is backend repository for our project \"dhobigo\". It will be Node.js backend and we will be using Express.js as framework and postman as test software for this Backend Development.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon src/index.js"
   },
   "repository": {
     "type": "git",
@@ -13,12 +14,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/SherazDeveloper12/DhoobiGo-Backend/issues"
   },
   "homepage": "https://github.com/SherazDeveloper12/DhoobiGo-Backend#readme",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "mongoose": "^9.2.4",
