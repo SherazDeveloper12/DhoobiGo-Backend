@@ -1,8 +1,7 @@
 import express from "express";
 import {
-    userExistCheck,
-  register,
-  login,
+  createOtp,
+  authenticateUser,
     getAllUsers,
     getUserById,
     updateUser,
@@ -11,9 +10,8 @@ import {
 
 const AuthRouter = express.Router();
 
-AuthRouter.get("/user-exist/:phoneNumber", userExistCheck);
-AuthRouter.post("/register", register);
-AuthRouter.post("/login", login);
+AuthRouter.post("/createOtp/:phoneNumber", createOtp);
+AuthRouter.post("/authenticateUser", authenticateUser);
 AuthRouter.get("/users", getAllUsers);
 AuthRouter.get("/users/:id", getUserById);
 AuthRouter.put("/users/:id", updateUser);
