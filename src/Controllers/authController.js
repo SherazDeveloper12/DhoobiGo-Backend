@@ -5,13 +5,26 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 export const createOtp = async (req, res) => {
     const { phoneNumber } = req.params;
-    console.log("Received phone number for OTP:", phoneNumber);
     try {
+        const existingOtp = await otpModel.findOne({ phoneNumber });
+        if (existingOtp) {
+          if (existingOtp.expiresAt < Date.now()) {
+                console.log("existing otp expires at:", new Date(existingOtp.expiresAt));
+                console.log("current time:", new Date());
+                await otpModel.deleteOne({ _id: existingOtp._id });
+            }else {
+                const timeLeft = existingOtp.expiresAt - Date.now();
+            const minutes = Math.floor(timeLeft / 60000);
+            const seconds = Math.floor((timeLeft % 60000) / 1000);
+                return res.status(400).json({ message: `An OTP has already been sent to this phone number. Please wait ${minutes} minutes and ${seconds} seconds before requesting a new one.`, otpsend: false });
+            }
+
+        }
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const expiresAt = Date.now() + 5 * 60 * 1000;
+        const expiresAt = Date.now() + 3 * 60 * 1000;
         const data = {
             to: phoneNumber,
-            message: `Your DhoobGo 6-Digit OTP code is ${otpCode}. Please do not share it with anyone. Your OTP is valid for 5 minutes.`
+            message: `Your DhoobGo 6-Digit OTP code is ${otpCode}. Please do not share it with anyone. Your OTP is valid for 3 minutes.`
         };
         const config = {
             method: 'post',
@@ -46,10 +59,15 @@ export const createOtp = async (req, res) => {
     }
 }
 export const authenticateUser = async (req, res) => {
-    const { phoneNumber, otpCode } = req.body;
+    console.log("Received request body:", req.body);
+    const { phoneNumber } = req.body;
+    const {  otpCode } = req.body;
+    console.log("Received phoneNumber:", phoneNumber);
+    console.log("Received otpCode:", otpCode);
     try {
+        
         const otpEntry = await otpModel.findOne({ phoneNumber });
-
+        console.log("OTP entry found:", otpEntry);
         if (!otpEntry || otpEntry.otpCode !== otpCode || otpEntry.expiresAt < Date.now()) {
             return res.status(400).json({ message: "Invalid OTP" });
         }
@@ -100,5 +118,5 @@ export const updateUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error updating user", error });
     }
- }
+}
 export const deleteUser = async (req, res) => { }
